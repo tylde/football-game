@@ -1,0 +1,16 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    background-color: #2D2D2D;
+}
+
+#sketch {
+    width: 1100px;
+    padding-top: 80px;
+    margin: auto;
+}
+
+
+#canvas {
+    border: 2px solid #BDBDBD;
+}
