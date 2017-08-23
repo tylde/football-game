@@ -1,8 +1,8 @@
 class Ball extends Circle {
-    constructor(x, y, mass, r, color) {
+    constructor(x, y, mass, r, speed, color) {
         super(x, y, mass, r);
         
-        this.topspeed = 3;
+        this.topspeed = speed;
         this.collision = false;
         this.color = color
     }
@@ -10,8 +10,8 @@ class Ball extends Circle {
         this.velocity.add(this.acceleration);
         this.velocity.limit(this.topspeed);
 
-        // if (Math.abs(this.velocity.x < 0.001)) this.velocity.x = 0;
-        // if (Math.abs(this.velocity.y < 0.001)) this.velocity.y = 0;
+        if (Math.abs(this.velocity.x) < 0.04) this.velocity.x = 0;
+        if (Math.abs(this.velocity.y) < 0.04) this.velocity.y = 0;
 
         this.position.add(this.velocity);
 

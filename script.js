@@ -12,6 +12,11 @@ const DOWN = (canvas.height - PITCH_HEIGHT) / 2 + PITCH_HEIGHT;
 const LEFT = (canvas.width - PITCH_WIDTH) / 2;
 const RIGHT = (canvas.width - PITCH_WIDTH) / 2 + PITCH_WIDTH;
 
+const ZONE_UP = 0;
+const ZONE_DOWN = canvas.height;
+const ZONE_LEFT = 0;
+const ZONE_RIGHT = canvas.width;
+
 const GOAL_AREA_WIDTH = 150;
 const GOAL_AREA_HEIGHT = 320;
 const GATE_HEIGHT = 144;
@@ -25,8 +30,8 @@ var post4 = new GoalPost((canvas.width - PITCH_WIDTH) / 2  + PITCH_WIDTH + 2, (c
 
 var balls = [];
 
-var ball = new Ball((canvas.width - PITCH_WIDTH) / 2 + PITCH_WIDTH / 2, (canvas.height - PITCH_HEIGHT) / 2 + PITCH_HEIGHT / 2, 1, 10, 'white');
-var player1 = new Player(750, 400, 5, 15, '#00ace6');
+var ball = new Ball((canvas.width - PITCH_WIDTH) / 2 + PITCH_WIDTH / 2, (canvas.height - PITCH_HEIGHT) / 2 + PITCH_HEIGHT / 2, 1, 10, 7, 'white');
+var player1 = new Player(750, 400, 5, 15, 3, '#00ace6');
 
 balls.push(ball);
 balls.push(player1);
@@ -37,7 +42,7 @@ var timer = setInterval(script, 1000 / FRAMES);
 
 function script() {
     update();
-    console.log(player1.velocity.x, player1.velocity.y);
+    console.log(player1.up, player1.right, player1.down, player1.left, player1.kick);
     draw();
 }
 
@@ -51,16 +56,16 @@ function update() {
     for (let i = 0; i < balls.length; i++) {
         let friction = balls[i].velocity.get();
         let coefficient = 0.1;
-        let normalForce = 1;
+        let normalForce = 0.8*balls[i].mass;
         friction.mult(-1).norm().mult(coefficient).mult(normalForce);
         balls[i].addForce(friction);
     }
 
     // PLAYER ACCELERATION
-    if (player1.up === true) player1.addForce(new Vector2D(0, -1));
-    if (player1.down === true) player1.addForce(new Vector2D(0, 1));
-    if (player1.left === true) player1.addForce(new Vector2D(-1, 0));
-    if (player1.right === true) player1.addForce(new Vector2D(1, 0));
+    if (player1.up === true) player1.addForce(new Vector2D(0, -0.7));
+    if (player1.down === true) player1.addForce(new Vector2D(0, 0.7));
+    if (player1.left === true) player1.addForce(new Vector2D(-0.7, 0));
+    if (player1.right === true) player1.addForce(new Vector2D(0.7, 0));
 
     // MOVEMENT
     for (let i = 0; i < balls.length; i++) {
@@ -82,6 +87,9 @@ function update() {
         post3.bounce(balls[i], 1);
         post4.bounce(balls[i], 1);
     }
+
+    // KICKING
+    player1.kickBall(ball);
 
 }
 
@@ -164,6 +172,9 @@ document.addEventListener('keydown', (event) => {
         case 39:
             player1.right = true;
             break;
+        case 88:
+            player1.kick = true;
+            break;
     }
 });
 document.addEventListener('keyup', (event) => {
@@ -179,6 +190,9 @@ document.addEventListener('keyup', (event) => {
             break;
         case 39:
             player1.right = false;
+            break;
+        case 88:
+            player1.kick = false;
             break;
     }
 });
