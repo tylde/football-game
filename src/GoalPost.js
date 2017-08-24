@@ -1,16 +1,14 @@
 class GoalPost extends Circle {
     constructor(x, y, mass, r) {
         super(x, y, mass, r);
-        
-        this.topspeed = 10;
     }
     draw() {
-        ctx.fillStyle = '#b35c00';
+        ctx.fillStyle = '#aaa';
         ctx.beginPath();
         ctx.lineWidth = 2;
         ctx.arc(this.position.x, this.position.y, this.r, 0, Math.PI*2);
         ctx.fill();
-        ctx.strokeStyle = '#4d2800';
+        ctx.strokeStyle = '#000';
         ctx.stroke();
         ctx.closePath();
     }

@@ -4,9 +4,12 @@ class Ball extends Circle {
         
         this.topspeed = speed;
         this.collision = false;
-        this.color = color
+        this.color = color;
+        this.type = 'ball';
+        this.name = '';
+        this.id = 'ball';
     }
-    move(up, right, down, left) {
+    move(up, right, down, left, gate_up, gate_down) {
         this.velocity.add(this.acceleration);
         this.velocity.limit(this.topspeed);
 
@@ -24,15 +27,40 @@ class Ball extends Circle {
             this.position.y = down - this.r;
             this.velocity.y = -this.velocity.y;
         }
-        if (this.position.x - this.r < left) {
-            this.position.x = left + this.r;
-            this.velocity.x = -this.velocity.x;
+
+
+        if (this.position.y - this.r < gate_down && this.position.y + this.r > gate_up) {
+            // GATE 
+            if (this.position.x - this.r + 50 < left) {
+                this.position.x = left + this.r - 50;
+                this.velocity.x = -this.velocity.x;
+            }
+            else if (this.position.x + this.r - 50 > right) {
+                this.position.x = right - this.r + 50;
+                this.velocity.x = -this.velocity.x;
+            }
+
+            if (this.position.y - this.r < gate_up - 2 && (this.position.x - this.r < left || this.position.x + this.r > right)) {
+                this.position.y = gate_up + this.r;
+                this.velocity.y = -this.velocity.y;
+            }
+            else if (this.position.y + this.r > gate_down + 2 && (this.position.x - this.r < left || this.position.x + this.r > right)) {
+                this.position.y = gate_down - this.r;
+                this.velocity.y = -this.velocity.y;
+            }
         }
-        else if (this.position.x + this.r > right) {
-            this.position.x = right - this.r;
-            this.velocity.x = -this.velocity.x;
+        else {
+            if (this.position.x - this.r < left) {
+                this.position.x = left + this.r;
+                this.velocity.x = -this.velocity.x;
+            }
+            else if (this.position.x + this.r > right) {
+                this.position.x = right - this.r;
+                this.velocity.x = -this.velocity.x;
+            }
         }
     }
+
     draw() {
         ctx.fillStyle = this.color;
         ctx.beginPath();
@@ -44,7 +72,7 @@ class Ball extends Circle {
         ctx.closePath();
     }
 
-    bounce(ball) {
+    bounce(ball, restitution) {
         let vNormal = Vector2D.sub(ball.position, this.position);
         let vTangent = new Vector2D(-vNormal.y, vNormal.x)
         let dist = vNormal.mag();
@@ -69,8 +97,8 @@ class Ball extends Circle {
             let vel2n = vNormal.get().mult(v2n_);
             let vel2t = vTangent.get().mult(v2t_);
 
-            this.velocity = vel1n.add(vel1t);
-            ball.velocity = vel2n.add(vel2t);
+            this.velocity = vel1n.add(vel1t).mult(restitution);
+            ball.velocity = vel2n.add(vel2t).mult(restitution);
             
             let dr = (this.r + ball.r - dist) / 2;
             let cor1 = vNormal.get().mult(-dr);
